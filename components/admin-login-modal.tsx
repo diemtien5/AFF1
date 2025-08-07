@@ -16,8 +16,8 @@ interface AdminLoginModalProps {
 }
 
 export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProps) {
-  const [username, setUsername] = useState("haidang")
-  const [password, setPassword] = useState("123456")
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -25,24 +25,47 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
     e.preventDefault()
     setLoading(true)
 
-    // Simple authentication check
-    if (username === "haidang" && password === "123456") {
-      localStorage.setItem("admin_authenticated", "true")
+    try {
+      // Get credentials from environment variables
+      const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME
+      const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+
+      if (!adminUsername || !adminPassword) {
+        toast({
+          title: "Lỗi cấu hình",
+          description: "Thông tin đăng nhập admin chưa được cấu hình",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Simple authentication check (in production, use proper auth service)
+      if (username === adminUsername && password === adminPassword) {
+        // Use sessionStorage instead of localStorage for better security
+        sessionStorage.setItem("admin_authenticated", "true")
+        toast({
+          title: "Đăng nhập thành công",
+          description: "Chuyển hướng đến trang quản trị...",
+        })
+        onClose()
+        router.push("/admin")
+      } else {
+        toast({
+          title: "Đăng nhập thất bại",
+          description: "Tên đăng nhập hoặc mật khẩu không đúng",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Login error:", error)
       toast({
-        title: "Đăng nhập thành công",
-        description: "Chuyển hướng đến trang quản trị...",
-      })
-      onClose()
-      router.push("/admin")
-    } else {
-      toast({
-        title: "Đăng nhập thất bại",
-        description: "Tên đăng nhập hoặc mật khẩu không đúng",
+        title: "Lỗi",
+        description: "Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.",
         variant: "destructive",
       })
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
@@ -55,7 +78,14 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <Label htmlFor="username">Tên đăng nhập</Label>
-            <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <Input 
+              id="username" 
+              type="text" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
+              required 
+              autoComplete="username"
+            />
           </div>
 
           <div>
@@ -66,6 +96,7 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
 

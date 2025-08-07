@@ -36,11 +36,24 @@ export default function ImageUpload({
       const file = event.target.files?.[0]
       if (!file) return
 
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
+      // Validate file type more strictly
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+      if (!allowedTypes.includes(file.type)) {
         toast({
           title: "Lỗi",
-          description: "Vui lòng chọn file hình ảnh",
+          description: "Chỉ chấp nhận file JPG, PNG, WebP hoặc GIF",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Validate file extension
+      const fileExt = file.name.split(".").pop()?.toLowerCase()
+      const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+      if (!fileExt || !allowedExtensions.includes(fileExt)) {
+        toast({
+          title: "Lỗi",
+          description: "Đuôi file không hợp lệ",
           variant: "destructive",
         })
         return
@@ -56,9 +69,9 @@ export default function ImageUpload({
         return
       }
 
-      // Create unique filename
-      const fileExt = file.name.split(".").pop()
-      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      // Create secure unique filename using crypto.randomUUID()
+      const secureId = crypto.randomUUID()
+      const fileName = `${folder}/${Date.now()}-${secureId}.${fileExt}`
 
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage.from(bucket).upload(fileName, file, {

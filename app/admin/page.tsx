@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem("admin_authenticated")
+    const isAuthenticated = sessionStorage.getItem("admin_authenticated")
     if (!isAuthenticated) {
       router.push("/")
       return
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("admin_authenticated")
+    sessionStorage.removeItem("admin_authenticated")
     router.push("/")
   }
 
