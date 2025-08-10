@@ -12,7 +12,7 @@ export const uploadImage = async (file: File, bucket = "card-images", folder = "
     }
 
     // Create unique filename
-    const fileExt = file.name.split(".").pop()
+    const fileExt = file.name.split(".").pop() || 'jpg'
     const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
 
     // Upload file
@@ -37,11 +37,24 @@ export const uploadImage = async (file: File, bucket = "card-images", folder = "
 
 export const deleteImage = async (url: string, bucket = "card-images") => {
   try {
-    // Extract filename from URL
-    const urlParts = url.split("/")
-    const fileName = urlParts[urlParts.length - 1]
+    // Extract the full path from the public URL
+    const urlObj = new URL(url)
+    const pathSegments = urlObj.pathname.split('/')
+    
+    // Find the storage bucket segment and extract everything after it
+    const bucketIndex = pathSegments.findIndex(segment => segment === bucket)
+    if (bucketIndex === -1 || bucketIndex === pathSegments.length - 1) {
+      throw new Error("Invalid storage URL format")
+    }
+    
+    // Get the full file path including folders
+    const filePath = pathSegments.slice(bucketIndex + 1).join('/')
+    
+    if (!filePath) {
+      throw new Error("Could not extract file path from URL")
+    }
 
-    const { error } = await supabase.storage.from(bucket).remove([fileName])
+    const { error } = await supabase.storage.from(bucket).remove([filePath])
 
     if (error) throw error
   } catch (error) {

@@ -18,7 +18,7 @@ export function useConsultant() {
         .from("consultants")
         .select("*")
         .limit(1)
-        .single()
+        .maybeSingle()
 
       if (error) throw error
       setConsultant(data)
