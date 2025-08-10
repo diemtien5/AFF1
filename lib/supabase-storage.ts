@@ -11,9 +11,10 @@ export const uploadImage = async (file: File, bucket = "card-images", folder = "
       throw new Error("File size must be less than 5MB")
     }
 
-    // Create unique filename
+    // Create secure unique filename using crypto.randomUUID()
     const fileExt = file.name.split(".").pop()
-    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+    const secureId = crypto.randomUUID()
+    const fileName = `${folder}/${Date.now()}-${secureId}.${fileExt}`
 
     // Upload file
     const { data, error } = await supabase.storage.from(bucket).upload(fileName, file, {

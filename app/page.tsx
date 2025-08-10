@@ -63,39 +63,78 @@ export default function HomePage() {
   const [navbarLinks, setNavbarLinks] = useState<NavbarLink[]>([])
   const [showAdminModal, setShowAdminModal] = useState(false)
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchData()
-  }, [])
+  const [error, setError] = useState<string | null>(null)
 
   const fetchData = async () => {
     try {
+      setError(null)
+      setLoading(true)
+
       // Fetch loan packages
-      const { data: packages } = await supabase
+      const { data: packages, error: packagesError } = await supabase
         .from("loan_packages")
         .select("*")
         .order("created_at", { ascending: true })
 
+      if (packagesError) {
+        throw new Error(`Error fetching loan packages: ${packagesError.message}`)
+      }
+
       // Fetch consultant info
-      const { data: consultants } = await supabase.from("consultants").select("*").limit(1).single()
+      const { data: consultants, error: consultantsError } = await supabase
+        .from("consultants")
+        .select("*")
+        .limit(1)
+        .single()
+
+      if (consultantsError) {
+        throw new Error(`Error fetching consultant: ${consultantsError.message}`)
+      }
 
       // Fetch navbar links
-      const { data: links } = await supabase.from("navbar_links").select("*").order("created_at", { ascending: true })
+      const { data: links, error: linksError } = await supabase
+        .from("navbar_links")
+        .select("*")
+        .order("created_at", { ascending: true })
+
+      if (linksError) {
+        throw new Error(`Error fetching navbar links: ${linksError.message}`)
+      }
 
       setLoanPackages(packages || [])
       setConsultant(consultants)
       setNavbarLinks(links || [])
     } catch (error) {
       console.error("Error fetching data:", error)
+      setError(error instanceof Error ? error.message : "Có lỗi xảy ra khi tải dữ liệu")
     } finally {
       setLoading(false)
     }
   }
 
+  useEffect(() => {
+    fetchData()
+  }, []) // fetchData is stable and doesn't need to be in dependencies
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Lỗi tải dữ liệu</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={fetchData} className="bg-blue-600 hover:bg-blue-700">
+            Thử lại
+          </Button>
+        </div>
       </div>
     )
   }
