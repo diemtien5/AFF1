@@ -77,7 +77,7 @@ export default function HomePage() {
         .order("created_at", { ascending: true })
 
       // Fetch consultant info
-      const { data: consultants } = await supabase.from("consultants").select("*").limit(1).single()
+      const { data: consultants, error: consultantError } = await supabase.from("consultants").select("*").limit(1).maybeSingle()
 
       // Fetch navbar links
       const { data: links } = await supabase.from("navbar_links").select("*").order("created_at", { ascending: true })
