@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Star, Phone, MessageCircle, Shield } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
 import { supabase } from "@/lib/supabase"
-import AdminLoginModal from "@/components/admin-login-modal"
+
 import MobileNavigation from "@/components/mobile-navigation"
 import Image from "next/image"
 import MobileSidebar from "@/components/mobile-sidebar"
@@ -61,7 +61,7 @@ export default function HomePage() {
   const [loanPackages, setLoanPackages] = useState<LoanPackage[]>([])
   const [consultant, setConsultant] = useState<Consultant | null>(null)
   const [navbarLinks, setNavbarLinks] = useState<NavbarLink[]>([])
-  const [showAdminModal, setShowAdminModal] = useState(false)
+
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -133,14 +133,12 @@ export default function HomePage() {
                 <a href="/dashboard?tab=cub" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                   Vay CUB
                 </a>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowAdminModal(true)}
-                  className="text-gray-400 hover:text-gray-600 opacity-60"
+                <a 
+                  href="http://aff.phucnguyens.id.vn/admin"
+                  className="text-gray-400 hover:text-gray-600 opacity-60 px-3 py-1.5 text-sm font-medium transition-colors rounded-md hover:bg-gray-100"
                 >
                   Admin
-                </Button>
+                </a>
               </div>
             </div>
           </div>
@@ -523,8 +521,7 @@ export default function HomePage() {
       {/* Mobile Navigation */}
       <MobileNavigation navbarLinks={navbarLinks} />
 
-      {/* Admin Login Modal */}
-      <AdminLoginModal isOpen={showAdminModal} onClose={() => setShowAdminModal(false)} />
+
     </div>
   )
 }
