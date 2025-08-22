@@ -61,7 +61,6 @@ export default function HomePage() {
   const [loanPackages, setLoanPackages] = useState<LoanPackage[]>([])
   const [consultant, setConsultant] = useState<Consultant | null>(null)
   const [navbarLinks, setNavbarLinks] = useState<NavbarLink[]>([])
-  const [showAdminModal, setShowAdminModal] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -133,14 +132,9 @@ export default function HomePage() {
                 <a href="/dashboard?tab=cub" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                   Vay CUB
                 </a>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowAdminModal(true)}
-                  className="text-gray-400 hover:text-gray-600 opacity-60"
-                >
+                <a href="/admin" className="text-gray-400 hover:text-gray-600 opacity-60 text-sm font-medium">
                   Admin
-                </Button>
+                </a>
               </div>
             </div>
           </div>
@@ -524,7 +518,7 @@ export default function HomePage() {
       <MobileNavigation navbarLinks={navbarLinks} />
 
       {/* Admin Login Modal */}
-      <AdminLoginModal isOpen={showAdminModal} onClose={() => setShowAdminModal(false)} />
+      {/* Removed AdminLoginModal as per edit hint */}
     </div>
   )
 }
