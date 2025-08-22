@@ -53,17 +53,20 @@ export default function AdminDashboard() {
   const [consultant, setConsultant] = useState<Consultant | null>(null)
   const [navbarLinks, setNavbarLinks] = useState<NavbarLink[]>([])
   const [loading, setLoading] = useState(true)
+  const [authenticated, setAuthenticated] = useState(false)
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [usernameInput, setUsernameInput] = useState("")
+  const [passwordInput, setPasswordInput] = useState("")
 
   useEffect(() => {
     // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem("admin_authenticated")
-    if (!isAuthenticated) {
-      router.push("/")
-      return
-    }
+    const isAuth = localStorage.getItem("admin_authenticated") === "true"
+    setAuthenticated(isAuth)
 
-    fetchData()
-  }, [router])
+    if (isAuth) {
+      fetchData()
+    }
+  }, [])
 
   const fetchData = async () => {
     try {
@@ -173,6 +176,66 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     localStorage.removeItem("admin_authenticated")
     router.push("/")
+  }
+
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginLoading(true)
+
+    // Simple hard-coded credentials check
+    if (usernameInput === "haidang" && passwordInput === "123456") {
+      localStorage.setItem("admin_authenticated", "true")
+      setAuthenticated(true)
+      toast({
+        title: "Đăng nhập thành công",
+        description: "Chuyển hướng đến trang quản trị...",
+      })
+      // Fetch dashboard data after login
+      fetchData()
+    } else {
+      toast({
+        title: "Đăng nhập thất bại",
+        description: "Tên đăng nhập hoặc mật khẩu không đúng",
+        variant: "destructive",
+      })
+    }
+
+    setLoginLoading(false)
+  }
+
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 space-y-6">
+          <h2 className="text-2xl font-bold text-center">Đăng nhập Admin</h2>
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div>
+              <Label htmlFor="admin-username">Tên đăng nhập</Label>
+              <Input
+                id="admin-username"
+                type="text"
+                value={usernameInput}
+                onChange={(e) => setUsernameInput(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="admin-password">Mật khẩu</Label>
+              <Input
+                id="admin-password"
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loginLoading}>
+              {loginLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+            </Button>
+          </form>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {
