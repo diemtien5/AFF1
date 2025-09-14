@@ -11,7 +11,7 @@ export interface LoanPackage {
   register_link: string
   detail_link: string
   referral_code?: string
-  show_tooltip?: boolean
+  tooltip_enabled?: boolean
   created_at?: string
 }
 

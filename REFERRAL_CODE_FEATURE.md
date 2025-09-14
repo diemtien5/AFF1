@@ -7,8 +7,8 @@ Tính năng này cho phép admin quản lý mã giới thiệu cho từng gói v
 
 ### 1. Database Schema
 - Thêm cột `referral_code` vào bảng `loan_packages`
-- Thêm cột `show_tooltip` vào bảng `loan_packages`
-- Giá trị mặc định: `referral_code = 'CN09XXXX'`, `show_tooltip = true`
+- Thêm cột `tooltip_enabled` vào bảng `loan_packages`
+- Giá trị mặc định: `referral_code = 'CN09XXXX'`, `tooltip_enabled = false`
 - Script migration:
   - `scripts/add-referral-code-column.sql`
   - `scripts/add-show-tooltip-column.sql`
@@ -32,12 +32,12 @@ Tính năng này cho phép admin quản lý mã giới thiệu cho từng gói v
 #### Cập nhật Admin Dashboard (`app/admin/dashboard/page.tsx`)
 - Thêm trường nhập "Mã giới thiệu" trong phần quản lý gói vay
 - Thêm toggle switch "Hiển thị Tooltip" để bật/tắt tooltip
-- Cập nhật interface `LoanPackage` để bao gồm `referral_code` và `show_tooltip`
+- Cập nhật interface `LoanPackage` để bao gồm `referral_code` và `tooltip_enabled`
 - Lưu và cập nhật mã giới thiệu và cài đặt tooltip vào database
 
 ### 3. Type Definitions
 - Cập nhật interface `LoanPackage` trong `types/index.ts`
-- Thêm trường `referral_code?: string` và `show_tooltip?: boolean`
+- Thêm trường `referral_code?: string` và `tooltip_enabled?: boolean`
 
 ## Cách sử dụng
 
@@ -68,11 +68,11 @@ BEGIN
   END IF;
 END $$;
 
--- Add show_tooltip column to loan_packages table
+-- Add tooltip_enabled column to loan_packages table
 DO $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='loan_packages' AND column_name='show_tooltip') THEN
-    ALTER TABLE loan_packages ADD COLUMN show_tooltip BOOLEAN DEFAULT true;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='loan_packages' AND column_name='tooltip_enabled') THEN
+    ALTER TABLE loan_packages ADD COLUMN tooltip_enabled BOOLEAN DEFAULT false;
   END IF;
 END $$;
 ```
@@ -92,5 +92,5 @@ END $$;
 - Sử dụng `navigator.clipboard.writeText()` để sao chép mã
 - Toast notification khi sao chép thành công/thất bại
 - Fallback giá trị mặc định nếu `referral_code` không có trong database
-- Tooltip chỉ hiển thị khi `show_tooltip` được bật (mặc định: true)
+- Tooltip chỉ hiển thị khi `tooltip_enabled` được bật (mặc định: false)
 - Toggle switch sử dụng component `Switch` từ shadcn/ui

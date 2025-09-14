@@ -31,7 +31,7 @@ interface LoanPackage {
   register_link: string
   detail_link: string
   referral_code?: string
-  show_tooltip?: boolean
+  tooltip_enabled?: boolean
 }
 
 interface Consultant {
@@ -94,17 +94,40 @@ export default function AdminDashboard() {
       // Ensure all required fields are present
       const packageData = {
         ...pkg,
+        name: pkg.name || "Gói vay mới",
+        slug: pkg.slug || `goi-vay-moi-${Date.now()}`,
+        description: pkg.description || "Mô tả gói vay",
+        loan_limit: pkg.loan_limit || "Tối đa 50.000.000 ₫",
+        interest_rate: pkg.interest_rate || "Từ 1.5%/tháng",
+        disbursement_speed: pkg.disbursement_speed || "Trong 24 giờ",
+        logo: pkg.logo || "",
+        image: pkg.image || "",
         register_link: pkg.register_link || "",
         detail_link: pkg.detail_link || "",
         referral_code: pkg.referral_code || "CN09XXXX",
-        show_tooltip: pkg.show_tooltip !== false,
+        tooltip_enabled: pkg.tooltip_enabled ?? true,
       }
+
+      // Remove any undefined or null values that might cause issues
+      Object.keys(packageData).forEach(key => {
+        if (packageData[key] === undefined) {
+          delete packageData[key]
+        }
+      })
+
+      console.log("Saving package data:", packageData)
 
       const { error } = await supabase.from("loan_packages").upsert(packageData)
 
       if (error) {
         console.error("Supabase error:", error)
-        throw error
+        console.error("Error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
+        throw new Error(`Supabase error: ${error.message} (Code: ${error.code})`)
       }
 
       toast({
@@ -228,7 +251,7 @@ export default function AdminDashboard() {
                     register_link: "",
                     detail_link: "",
                     referral_code: "CN09XXXX",
-                    show_tooltip: true,
+                    tooltip_enabled: true,
                   }
                   setLoanPackages([...loanPackages, newPackage])
                 }}
@@ -393,10 +416,10 @@ export default function AdminDashboard() {
                         </div>
                         <Switch
                           id={`show-tooltip-${index}`}
-                          checked={pkg.show_tooltip !== false}
+                          checked={pkg.tooltip_enabled ?? true}
                           onCheckedChange={(checked) => {
                             const updated = [...loanPackages]
-                            updated[index].show_tooltip = checked
+                            updated[index].tooltip_enabled = checked
                             setLoanPackages(updated)
                           }}
                         />

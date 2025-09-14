@@ -28,7 +28,7 @@ interface LoanPackage {
   register_link: string
   detail_link: string
   referral_code?: string
-  show_tooltip?: boolean
+  tooltip_enabled?: boolean
 }
 
 interface Consultant {
@@ -423,7 +423,7 @@ export default function HomePage() {
                   <div className="flex justify-center space-x-3 pt-2">
                     <RegisterTooltip
                       referralCode={pkg.referral_code || 'CN09XXXX'}
-                      showTooltip={pkg.show_tooltip !== false}
+                      showTooltip={pkg.tooltip_enabled ?? true}
                     >
                       <Button
                         className="px-4 py-2 bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600 text-white border-0 text-sm rounded-full flex-1 max-w-[130px]"
