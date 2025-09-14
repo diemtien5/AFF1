@@ -10,6 +10,8 @@ export interface LoanPackage {
   image: string
   register_link: string
   detail_link: string
+  referral_code?: string
+  show_tooltip?: boolean
   created_at?: string
 }
 
@@ -48,4 +50,4 @@ export interface AnalyticsStats {
   type: string
   value: number
   created_at?: string
-} 
+}

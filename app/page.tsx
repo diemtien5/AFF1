@@ -13,6 +13,7 @@ import { useTrackingActions } from "@/hooks/use-tracking-actions"
 import MobileNavigation from "@/components/mobile-navigation"
 import Image from "next/image"
 import MobileSidebar from "@/components/mobile-sidebar"
+import RegisterTooltip from "@/components/register-tooltip"
 
 interface LoanPackage {
   id: string
@@ -26,6 +27,8 @@ interface LoanPackage {
   image: string
   register_link: string
   detail_link: string
+  referral_code?: string
+  show_tooltip?: boolean
 }
 
 interface Consultant {
@@ -418,19 +421,24 @@ export default function HomePage() {
 
                   {/* Action Buttons */}
                   <div className="flex justify-center space-x-3 pt-2">
-                    <Button
-                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600 text-white border-0 text-sm rounded-full flex-1 max-w-[130px]"
-                      onClick={() => {
-                        if (pkg.register_link && pkg.register_link.trim() !== "") {
-                          trackClick(pkg.id, 'homepage_register')
-                          window.open(pkg.register_link, "_blank", "noopener,noreferrer")
-                        } else {
-                          // No register link available
-                        }
-                      }}
+                    <RegisterTooltip
+                      referralCode={pkg.referral_code || 'CN09XXXX'}
+                      showTooltip={pkg.show_tooltip !== false}
                     >
-                      🔘 ĐĂNG KÝ
-                    </Button>
+                      <Button
+                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600 text-white border-0 text-sm rounded-full flex-1 max-w-[130px]"
+                        onClick={() => {
+                          if (pkg.register_link && pkg.register_link.trim() !== "") {
+                            trackClick(pkg.id, 'homepage_register')
+                            window.open(pkg.register_link, "_blank", "noopener,noreferrer")
+                          } else {
+                            // No register link available
+                          }
+                        }}
+                      >
+                        🔘 ĐĂNG KÝ
+                      </Button>
+                    </RegisterTooltip>
                     <Button
                       variant="outline"
                       className="px-4 py-2 border-blue-200 text-blue-600 hover:bg-blue-50 bg-transparent text-sm rounded-full flex-1 max-w-[130px]"

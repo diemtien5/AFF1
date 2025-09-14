@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Switch } from "@/components/ui/switch"
 import { toast } from "@/hooks/use-toast"
 import { supabase } from "@/lib/supabase"
 import { ArrowLeft, Save, Trash2 } from "lucide-react"
@@ -29,6 +30,8 @@ interface LoanPackage {
   image: string
   register_link: string
   detail_link: string
+  referral_code?: string
+  show_tooltip?: boolean
 }
 
 interface Consultant {
@@ -93,6 +96,8 @@ export default function AdminDashboard() {
         ...pkg,
         register_link: pkg.register_link || "",
         detail_link: pkg.detail_link || "",
+        referral_code: pkg.referral_code || "CN09XXXX",
+        show_tooltip: pkg.show_tooltip !== false,
       }
 
       const { error } = await supabase.from("loan_packages").upsert(packageData)
@@ -104,7 +109,7 @@ export default function AdminDashboard() {
 
       toast({
         title: "Thành công",
-        description: "Đã lưu thông tin gói vay và link affiliate",
+        description: "Đã lưu thông tin gói vay, link affiliate và mã giới thiệu",
       })
 
       fetchData()
@@ -222,6 +227,8 @@ export default function AdminDashboard() {
                     image: "",
                     register_link: "",
                     detail_link: "",
+                    referral_code: "CN09XXXX",
+                    show_tooltip: true,
                   }
                   setLoanPackages([...loanPackages, newPackage])
                 }}
@@ -356,6 +363,42 @@ export default function AdminDashboard() {
                             setLoanPackages(updated)
                           }}
                           placeholder="https://example.com/details"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`referral-code-${index}`}>Mã giới thiệu</Label>
+                        <Input
+                          id={`referral-code-${index}`}
+                          value={pkg.referral_code || ''}
+                          onChange={(e) => {
+                            const updated = [...loanPackages]
+                            updated[index].referral_code = e.target.value
+                            setLoanPackages(updated)
+                          }}
+                          placeholder="CN09XXXX"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Tooltip Settings */}
+                    <div className="bg-blue-50/50 border border-blue-200/40 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor={`show-tooltip-${index}`} className="text-sm font-medium text-blue-800">
+                            Hiển thị Tooltip
+                          </Label>
+                          <p className="text-xs text-blue-600">
+                            Bật/tắt hiển thị tooltip hướng dẫn mã giới thiệu khi hover nút "ĐĂNG KÝ"
+                          </p>
+                        </div>
+                        <Switch
+                          id={`show-tooltip-${index}`}
+                          checked={pkg.show_tooltip !== false}
+                          onCheckedChange={(checked) => {
+                            const updated = [...loanPackages]
+                            updated[index].show_tooltip = checked
+                            setLoanPackages(updated)
+                          }}
                         />
                       </div>
                     </div>
