@@ -81,9 +81,11 @@ export default function RegisterTooltip({
           onRegisterClick()
         }
       }
-    } else if (!isMobile && onRegisterClick) {
-      // Desktop: direct redirect
-      onRegisterClick()
+    } else if (!isMobile) {
+      // Desktop: direct redirect (tooltip is handled by hover)
+      if (onRegisterClick) {
+        onRegisterClick()
+      }
     }
   }
 
