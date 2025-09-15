@@ -140,8 +140,8 @@ export default function RegisterTooltip({
             absolute z-50 bg-white border border-gray-200 rounded-xl shadow-lg p-4
             transition-all duration-300 ease-in-out
             ${isMobile
-              ? 'w-full max-w-[calc(100vw-2rem)] left-1/2 transform -translate-x-1/2 top-full mt-2'
-              : 'w-80 -translate-x-1/2 left-1/2 -top-2'
+              ? 'w-full max-w-[calc(100vw-2rem)] left-1/2 transform -translate-x-1/2 top-full mt-2 p-3'
+              : 'w-[320px] max-w-[80vw] -translate-x-1/2 left-1/2 -top-2'
             }
             ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
           `}
@@ -161,41 +161,35 @@ export default function RegisterTooltip({
             </div>
 
             <p className="text-xs text-gray-600 leading-relaxed">
-              Để được hưởng ưu đãi tốt nhất, vui lòng nhập đúng mã giới thiệu khi đăng ký.
+              Quý khách vui lòng nhập đúng mã nhân viên vào mục “Mã giấy thiệu” , để được hỗ trợ tốt về thẩm định và tăng phê duyệt.
             </p>
 
-            {/* Referral code section */}
-            <div className="bg-blue-50/50 border border-blue-200/40 rounded-lg p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-blue-600 font-medium">Mã giới thiệu:</span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 px-2 text-xs border-blue-300 text-blue-700 hover:bg-blue-100"
-                  onClick={handleCopyCode}
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-3 h-3 mr-1" />
-                      Đã sao chép
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3 h-3 mr-1" />
-                      Sao chép
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              <div className="bg-white border border-blue-200/60 rounded-md p-2">
-                <code className="text-sm font-bold text-blue-800 font-mono">
-                  {referralCode}
-                </code>
-              </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-blue-700">Mã giấy thiệu:</span>
+              <code className="text-sm font-bold text-blue-800 font-mono">
+                {referralCode}
+              </code>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-xs border-blue-300 text-blue-700 hover:bg-blue-100"
+                onClick={handleCopyCode}
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3 h-3 mr-1" />
+                    Đã sao chép
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3 mr-1" />
+                    Sao chép
+                  </>
+                )}
+              </Button>
             </div>
 
-            <p className="text-xs text-blue-600 text-center italic">
+            <p className="text-[11px] text-blue-600">
               Vui lòng sao chép mã giới thiệu và dán vào ô 'Mã giới thiệu' khi đăng ký.
             </p>
 
