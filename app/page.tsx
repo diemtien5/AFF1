@@ -424,17 +424,17 @@ export default function HomePage() {
                     <RegisterTooltip
                       referralCode={pkg.referral_code || 'CN09XXXX'}
                       showTooltip={pkg.tooltip_enabled ?? true}
+                      onRegisterClick={() => {
+                        if (pkg.register_link && pkg.register_link.trim() !== "") {
+                          trackClick(pkg.id, 'homepage_register')
+                          window.open(pkg.register_link, "_blank", "noopener,noreferrer")
+                        } else {
+                          // No register link available
+                        }
+                      }}
                     >
                       <Button
                         className="px-4 py-2 bg-gradient-to-r from-green-500 to-cyan-500 hover:from-green-600 hover:to-cyan-600 text-white border-0 text-sm rounded-full flex-1 max-w-[130px]"
-                        onClick={() => {
-                          if (pkg.register_link && pkg.register_link.trim() !== "") {
-                            trackClick(pkg.id, 'homepage_register')
-                            window.open(pkg.register_link, "_blank", "noopener,noreferrer")
-                          } else {
-                            // No register link available
-                          }
-                        }}
                       >
                         🔘 ĐĂNG KÝ
                       </Button>
