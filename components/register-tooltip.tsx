@@ -134,112 +134,74 @@ export default function RegisterTooltip({
       </div>
 
       {isVisible && showTooltip && (
-        <>
-          {/* Overlay background for mobile */}
-          {isMobile && (
-            <div
-              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[99998]"
-              onClick={() => {
-                setIsVisible(false)
-                setTapCount(0)
-                if (tapTimeout) {
-                  clearTimeout(tapTimeout)
-                  setTapTimeout(null)
-                }
-              }}
-            />
-          )}
-
-          {/* Tooltip content */}
-          <div
-            ref={tooltipRef}
-            className={`
-              fixed z-[99999] bg-white border-2 border-blue-300 rounded-2xl shadow-2xl
-              transition-all duration-300 ease-in-out
-              ${isMobile
-                ? 'w-[85vw] max-w-[320px] left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 p-5'
-                : 'w-[320px] max-w-[80vw] -translate-x-1/2 left-1/2 -top-2 p-4'
-              }
-              ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
-            `}
-            style={{
-              maxWidth: isMobile ? '85vw' : '80vw',
-              transform: isMobile
-                ? 'translateX(-50%) translateY(-50%)'
-                : 'translateX(-50%) translateY(-100%)',
-              boxShadow: isMobile
-                ? '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                : '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-            }}
-          >
-          <div className="space-y-4">
-            {/* Header with icon */}
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex-shrink-0 shadow-sm"></div>
-              <h3 className="text-base font-bold text-gray-900 leading-tight">
-                ⚠️ Lưu ý quan trọng
+        <div
+          ref={tooltipRef}
+          className={`
+            absolute z-50 bg-white border border-gray-200 rounded-xl shadow-lg
+            transition-all duration-200 ease-in-out
+            ${isMobile
+              ? 'w-[92vw] max-w-[320px] left-1/2 -translate-x-1/2 top-full mt-2 p-3'
+              : 'w-[320px] max-w-[80vw] left-1/2 -translate-x-1/2 -top-2 p-4'
+            }
+            ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
+          `}
+          style={{
+            maxWidth: isMobile ? '92vw' : '80vw',
+            transform: isMobile
+              ? 'translateX(-50%)'
+              : 'translateX(-50%) translateY(-100%)',
+          }}
+        >
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <h3 className="text-sm font-semibold text-gray-800">
+                Lưu ý trong quá trình đăng ký
               </h3>
             </div>
 
-            {/* Description */}
-            <div className="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-lg">
-              <p className="text-sm text-amber-800 leading-relaxed font-medium">
-                Quý khách vui lòng nhập đúng mã nhân viên vào mục "Mã giấy thiệu" để được hỗ trợ tốt về thẩm định và tăng phê duyệt.
-              </p>
-            </div>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Quý khách vui lòng nhập đúng mã nhân viên vào mục “Mã giấy thiệu” , để được hỗ trợ tốt về thẩm định và tăng phê duyệt.
+            </p>
 
-            {/* Code section */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 space-y-3 border border-blue-200">
-              <div className="text-center">
-                <span className="text-sm text-blue-700 font-semibold">Mã giấy thiệu của bạn:</span>
-              </div>
-
-              <div className="bg-white rounded-lg p-3 border-2 border-blue-200 shadow-sm">
-                <code className="text-lg font-black text-blue-900 font-mono tracking-wider text-center block">
-                  {referralCode}
-                </code>
-              </div>
-
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-blue-700">Mã giấy thiệu:</span>
+              <code className="text-sm font-bold text-blue-800 font-mono">
+                {referralCode}
+              </code>
               <Button
                 size="sm"
                 variant="outline"
-                className="w-full h-10 text-sm font-semibold border-2 border-blue-400 text-blue-700 hover:bg-blue-100 hover:border-blue-500 transition-all duration-200"
+                className="h-6 px-2 text-xs border-blue-300 text-blue-700 hover:bg-blue-100"
                 onClick={handleCopyCode}
               >
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4 mr-2" />
-                    Đã sao chép thành công!
+                    <Check className="w-3 h-3 mr-1" />
+                    Đã sao chép
                   </>
                 ) : (
                   <>
-                    <Copy className="w-4 h-4 mr-2" />
-                    📋 Sao chép mã
+                    <Copy className="w-3 h-3 mr-1" />
+                    Sao chép
                   </>
                 )}
               </Button>
             </div>
 
-            {/* Instruction */}
-            <div className="text-center bg-green-50 rounded-lg p-3 border border-green-200">
-              <p className="text-xs text-green-700 font-medium">
-                💡 Vui lòng sao chép mã giới thiệu và dán vào ô 'Mã giới thiệu' khi đăng ký.
-              </p>
-            </div>
+            <p className="text-[11px] text-blue-600">
+              Vui lòng sao chép mã giới thiệu và dán vào ô 'Mã giới thiệu' khi đăng ký.
+            </p>
 
-            {/* Mobile action hint */}
             {isMobile && tapCount === 1 && (
-              <div className="text-center bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-3 border-2 border-orange-300">
-                <p className="text-sm text-orange-700 font-bold">
-                  👆 Chạm lần nữa để đăng ký ngay
+              <div className="text-center">
+                <p className="text-xs text-orange-600 font-medium">
+                  Chạm lần nữa để đăng ký
                 </p>
               </div>
             )}
           </div>
-          </div>
-        </>
+        </div>
       )}
     </div>
   )
