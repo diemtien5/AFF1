@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import { Button } from "@/components/ui/button"
 import { Copy, Check } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
@@ -26,6 +27,15 @@ export default function RegisterTooltip({
   const tooltipRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 })
+
+  const updateTooltipPosition = () => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const top = rect.bottom + 8 // show under the button
+    const left = rect.left + rect.width / 2
+    setTooltipPos({ top, left })
+  }
 
   const handleCopyCode = async () => {
     try {
@@ -48,6 +58,7 @@ export default function RegisterTooltip({
 
   const handleMouseEnter = () => {
     if (!isMobile && showTooltip) {
+      updateTooltipPosition()
       setIsVisible(true)
     }
   }
@@ -63,6 +74,7 @@ export default function RegisterTooltip({
       // Mobile interaction logic
       if (tapCount === 0) {
         // First tap: show tooltip
+        updateTooltipPosition()
         setIsVisible(true)
         setTapCount(1)
 
@@ -96,7 +108,9 @@ export default function RegisterTooltip({
         isMobile &&
         isVisible &&
         containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        !containerRef.current.contains(event.target as Node) &&
+        tooltipRef.current &&
+        !tooltipRef.current.contains(event.target as Node)
       ) {
         setIsVisible(false)
         setTapCount(0)
@@ -107,9 +121,16 @@ export default function RegisterTooltip({
       }
     }
 
-    if (isMobile && isVisible) {
+    if (isVisible) {
+      updateTooltipPosition()
       document.addEventListener('mousedown', handleClickOutside)
+      window.addEventListener('scroll', updateTooltipPosition, true)
+      window.addEventListener('resize', updateTooltipPosition)
       return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      window.removeEventListener('scroll', updateTooltipPosition, true)
+      window.removeEventListener('resize', updateTooltipPosition)
     }
   }, [isMobile, isVisible, tapTimeout])
 
@@ -133,23 +154,23 @@ export default function RegisterTooltip({
         {children}
       </div>
 
-      {isVisible && showTooltip && (
+      {isVisible && showTooltip && createPortal(
         <div
           ref={tooltipRef}
           className={`
-            absolute z-50 bg-white border border-gray-200 rounded-xl shadow-lg
+            fixed z-[99999] bg-white border border-gray-200 rounded-xl shadow-lg
             transition-all duration-200 ease-in-out
             ${isMobile
-              ? 'w-[92vw] max-w-[320px] left-1/2 -translate-x-1/2 top-full mt-2 p-3'
-              : 'w-[320px] max-w-[80vw] left-1/2 -translate-x-1/2 -top-2 p-4'
+              ? 'w-[92vw] max-w-[320px] p-3'
+              : 'w-[320px] max-w-[80vw] p-4'
             }
             ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
           `}
           style={{
+            top: tooltipPos.top,
+            left: tooltipPos.left,
+            transform: 'translateX(-50%)',
             maxWidth: isMobile ? '92vw' : '80vw',
-            transform: isMobile
-              ? 'translateX(-50%)'
-              : 'translateX(-50%) translateY(-100%)',
           }}
         >
           <div className="space-y-3">
@@ -160,13 +181,13 @@ export default function RegisterTooltip({
               </h3>
             </div>
 
-            <p className="text-xs text-gray-600 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed whitespace-normal break-words">
               Quý khách vui lòng nhập đúng mã nhân viên vào mục “Mã giấy thiệu” , để được hỗ trợ tốt về thẩm định và tăng phê duyệt.
             </p>
 
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs text-blue-700">Mã giấy thiệu:</span>
-              <code className="text-sm font-bold text-blue-800 font-mono">
+              <code className="text-sm font-bold text-blue-800 font-mono whitespace-pre-wrap break-words">
                 {referralCode}
               </code>
               <Button
@@ -189,7 +210,7 @@ export default function RegisterTooltip({
               </Button>
             </div>
 
-            <p className="text-[11px] text-blue-600">
+            <p className="text-[11px] text-blue-600 whitespace-normal break-words">
               Vui lòng sao chép mã giới thiệu và dán vào ô 'Mã giới thiệu' khi đăng ký.
             </p>
 
@@ -201,7 +222,8 @@ export default function RegisterTooltip({
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
