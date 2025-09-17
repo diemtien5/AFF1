@@ -33,7 +33,17 @@ export default function RegisterTooltip({
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
     const top = rect.bottom + 8 // show under the button
-    const left = rect.left + rect.width / 2
+
+    // Calculate left position to keep tooltip within viewport
+    const tooltipWidth = isMobile ? Math.min(280, window.innerWidth - 32) : 320
+    const left = Math.max(
+      tooltipWidth / 2, // minimum left position
+      Math.min(
+        rect.left + rect.width / 2, // center of button
+        window.innerWidth - tooltipWidth / 2 // maximum right position
+      )
+    )
+
     setTooltipPos({ top, left })
   }
 
@@ -161,7 +171,7 @@ export default function RegisterTooltip({
             fixed z-[99999] bg-white border border-gray-200 rounded-xl shadow-lg
             transition-all duration-200 ease-in-out
             ${isMobile
-              ? 'w-[92vw] max-w-[320px] p-3'
+              ? 'p-2'
               : 'w-[320px] max-w-[80vw] p-4'
             }
             ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
@@ -170,53 +180,54 @@ export default function RegisterTooltip({
             top: tooltipPos.top,
             left: tooltipPos.left,
             transform: 'translateX(-50%)',
-            maxWidth: isMobile ? '92vw' : '80vw',
+            width: isMobile ? Math.min(280, window.innerWidth - 32) : 320,
+            maxWidth: isMobile ? Math.min(280, window.innerWidth - 32) : '80vw',
           }}
         >
-          <div className="space-y-3">
+          <div className={`${isMobile ? 'space-y-2' : 'space-y-3'}`}>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <h3 className="text-sm font-semibold text-gray-800">
+              <h3 className={`${isMobile ? 'text-xs font-semibold' : 'text-sm font-semibold'} text-gray-800`}>
                 Lưu ý trong quá trình đăng ký
               </h3>
             </div>
 
-            <p className="text-xs text-gray-600 leading-relaxed whitespace-normal break-words">
-              Quý khách vui lòng nhập đúng mã nhân viên vào mục “Mã giấy thiệu” , để được hỗ trợ tốt về thẩm định và tăng phê duyệt.
+            <p className={`${isMobile ? 'text-[10px] leading-tight' : 'text-xs leading-relaxed'} text-gray-600 whitespace-normal break-words`}>
+              Quý khách vui lòng nhập đúng mã nhân viên vào mục "Mã giấy thiệu" , để được hỗ trợ tốt về thẩm định và tăng phê duyệt.
             </p>
 
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-blue-700">Mã giấy thiệu:</span>
-              <code className="text-sm font-bold text-blue-800 font-mono whitespace-pre-wrap break-words">
+            <div className={`flex items-center gap-1 ${isMobile ? 'flex-wrap' : 'flex-wrap'}`}>
+              <span className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-blue-700`}>Mã giấy thiệu:</span>
+              <code className={`${isMobile ? 'text-xs font-bold' : 'text-sm font-bold'} text-blue-800 font-mono whitespace-pre-wrap break-words`}>
                 {referralCode}
               </code>
               <Button
                 size="sm"
                 variant="outline"
-                className="h-6 px-2 text-xs border-blue-300 text-blue-700 hover:bg-blue-100"
+                className={`${isMobile ? 'h-5 px-1 text-[10px]' : 'h-6 px-2 text-xs'} border-blue-300 text-blue-700 hover:bg-blue-100`}
                 onClick={handleCopyCode}
               >
                 {copied ? (
                   <>
-                    <Check className="w-3 h-3 mr-1" />
-                    Đã sao chép
+                    <Check className={`${isMobile ? 'w-2 h-2 mr-1' : 'w-3 h-3 mr-1'}`} />
+                    {isMobile ? 'Đã sao' : 'Đã sao chép'}
                   </>
                 ) : (
                   <>
-                    <Copy className="w-3 h-3 mr-1" />
+                    <Copy className={`${isMobile ? 'w-2 h-2 mr-1' : 'w-3 h-3 mr-1'}`} />
                     Sao chép
                   </>
                 )}
               </Button>
             </div>
 
-            <p className="text-[11px] text-blue-600 whitespace-normal break-words">
+            <p className={`${isMobile ? 'text-[9px]' : 'text-[11px]'} text-blue-600 whitespace-normal break-words`}>
               Vui lòng sao chép mã giới thiệu và dán vào ô 'Mã giới thiệu' khi đăng ký.
             </p>
 
             {isMobile && tapCount === 1 && (
               <div className="text-center">
-                <p className="text-xs text-orange-600 font-medium">
+                <p className="text-[10px] text-orange-600 font-medium">
                   Chạm lần nữa để đăng ký
                 </p>
               </div>
