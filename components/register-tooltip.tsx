@@ -35,19 +35,18 @@ export default function RegisterTooltip({
   const updateTooltipPosition = () => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
-    const top = rect.bottom + 8 // show under the button
+    const preferredBelowTop = rect.bottom + 8
+    const preferredAboveTop = rect.top - 8
 
-    // Calculate left position to keep tooltip within viewport
-    const tooltipWidth = isMobile ? Math.min(280, window.innerWidth - 32) : 320
+    // Provisional width until we can measure real tooltip
+    const provisionalWidth = isMobile ? Math.min(280, window.innerWidth - 32) : 320
     const left = Math.max(
-      tooltipWidth / 2, // minimum left position
-      Math.min(
-        rect.left + rect.width / 2, // center of button
-        window.innerWidth - tooltipWidth / 2 // maximum right position
-      )
+      provisionalWidth / 2,
+      Math.min(rect.left + rect.width / 2, window.innerWidth - provisionalWidth / 2)
     )
 
-    setTooltipPos({ top, left })
+    // Set provisional top (below), will refine after measuring
+    setTooltipPos({ top: preferredBelowTop, left })
   }
 
   useEffect(() => {
@@ -174,13 +173,19 @@ export default function RegisterTooltip({
       requestAnimationFrame(() => {
         if (tooltipRef.current) {
           const actualWidth = tooltipRef.current.offsetWidth || (isMobile ? Math.min(280, window.innerWidth - 32) : 320)
+          const actualHeight = tooltipRef.current.offsetHeight || 0
           const rect = containerRef.current?.getBoundingClientRect()
           if (rect) {
             const left = Math.max(
               actualWidth / 2,
               Math.min(rect.left + rect.width / 2, window.innerWidth - actualWidth / 2)
             )
-            setTooltipPos((p) => ({ ...p, left }))
+            // Decide above/below based on available space
+            const spaceBelow = window.innerHeight - rect.bottom
+            const spaceAbove = rect.top
+            const showBelow = spaceBelow >= actualHeight + 12 || spaceBelow >= spaceAbove
+            const top = showBelow ? rect.bottom + 8 : rect.top - actualHeight - 8
+            setTooltipPos({ top, left })
           }
         }
       })
