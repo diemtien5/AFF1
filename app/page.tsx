@@ -423,7 +423,7 @@ export default function HomePage() {
                   <div className="flex justify-center space-x-3 pt-2">
                     <RegisterTooltip
                       referralCode={pkg.referral_code || 'CN09XXXX'}
-                      showTooltip={pkg.tooltip_enabled ?? true}
+                      showTooltip={true}
                       onRegisterClick={() => {
                         if (pkg.register_link && pkg.register_link.trim() !== "") {
                           trackClick(pkg.id, 'homepage_register')
