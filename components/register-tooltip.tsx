@@ -30,6 +30,7 @@ export default function RegisterTooltip({
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 })
   const [isMounted, setIsMounted] = useState(false)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const closeAllTooltipsEvent = 'close-tooltips'
 
   const updateTooltipPosition = () => {
     if (!containerRef.current) return
@@ -79,6 +80,10 @@ export default function RegisterTooltip({
         clearTimeout(hideTimeoutRef.current)
         hideTimeoutRef.current = null
       }
+      // ensure only one tooltip visible globally
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event(closeAllTooltipsEvent))
+      }
       updateTooltipPosition()
       setIsVisible(true)
 
@@ -109,6 +114,9 @@ export default function RegisterTooltip({
       if (tapCount === 0) {
         // First tap: show tooltip
         updateTooltipPosition()
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event(closeAllTooltipsEvent))
+        }
         setIsVisible(true)
         setTapCount(1)
 
@@ -137,6 +145,14 @@ export default function RegisterTooltip({
 
   // Handle click outside to hide tooltip on mobile/desktop and keep position updated
   useEffect(() => {
+    const handleCloseAll = () => {
+      setIsVisible(false)
+      setTapCount(0)
+      if (tapTimeout) {
+        clearTimeout(tapTimeout)
+        setTapTimeout(null)
+      }
+    }
     const handleClickOutside = (event: MouseEvent) => {
       if (
         isVisible &&
@@ -145,12 +161,7 @@ export default function RegisterTooltip({
         tooltipRef.current &&
         !tooltipRef.current.contains(event.target as Node)
       ) {
-        setIsVisible(false)
-        setTapCount(0)
-        if (tapTimeout) {
-          clearTimeout(tapTimeout)
-          setTapTimeout(null)
-        }
+        handleCloseAll()
       }
     }
 
@@ -174,11 +185,13 @@ export default function RegisterTooltip({
         }
       })
     }
+    window.addEventListener(closeAllTooltipsEvent, handleCloseAll as EventListener)
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
       window.removeEventListener('scroll', updateTooltipPosition, true)
       window.removeEventListener('resize', updateTooltipPosition)
+      window.removeEventListener(closeAllTooltipsEvent, handleCloseAll as EventListener)
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current)
         hideTimeoutRef.current = null
