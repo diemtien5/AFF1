@@ -181,7 +181,7 @@ export default function RegisterTooltip({
           className={`
             fixed z-[99999] rounded-xl
             transition-all duration-500 ease-out transform
-            hover:scale-102 hover:brightness-110
+            hover:scale-102 hover:brightness-110 hover:rotate-1
             ${isMobile
               ? 'p-2'
               : 'w-[320px] max-w-[80vw] p-4'
@@ -192,40 +192,53 @@ export default function RegisterTooltip({
             top: tooltipPos.top,
             left: tooltipPos.left,
             transform: 'translateX(-50%)',
-            width: isMobile ? Math.min(280, window.innerWidth - 32) : 320,
+            width: 'fit-content',
+            minWidth: isMobile ? Math.min(280, window.innerWidth - 32) : 320,
             maxWidth: isMobile ? Math.min(280, window.innerWidth - 32) : '80vw',
             backgroundColor: '#EAF4FF',
-            border: '1px solid rgba(144, 202, 249, 0.6)',
-            borderRadius: '16px',
+            border: '2px solid #90CAF9',
+            borderRadius: '12px',
             boxShadow: `
-              0 0 0 1px rgba(144, 202, 249, 0.3),
-              0 0 20px rgba(144, 202, 249, 0.2),
-              0 0 40px rgba(144, 202, 249, 0.1),
-              0 4px 16px rgba(144, 202, 249, 0.15),
-              0 2px 8px rgba(144, 202, 249, 0.1),
+              0 0 0 1px rgba(255, 255, 255, 0.8),
+              0 2px 4px rgba(144, 202, 249, 0.3),
+              0 4px 8px rgba(144, 202, 249, 0.2),
+              0 8px 16px rgba(144, 202, 249, 0.15),
+              0 16px 32px rgba(144, 202, 249, 0.1),
               inset 0 1px 0 rgba(255, 255, 255, 0.9),
-              inset 0 -1px 0 rgba(144, 202, 249, 0.1)
+              inset 0 -1px 0 rgba(144, 202, 249, 0.2),
+              inset 1px 0 0 rgba(255, 255, 255, 0.5),
+              inset -1px 0 0 rgba(144, 202, 249, 0.1)
             `,
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
           }}
         >
-          {/* Arrow pointing to button */}
+          {/* Arrow pointing to button - 3D seamless design */}
           <div
             className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
-              borderLeft: '8px solid transparent',
-              borderRight: '8px solid transparent',
-              borderBottom: '8px solid rgba(144, 202, 249, 0.6)',
-              filter: 'drop-shadow(0 0 8px rgba(144, 202, 249, 0.3)) drop-shadow(0 0 16px rgba(144, 202, 249, 0.2))',
+              borderLeft: '10px solid transparent',
+              borderRight: '10px solid transparent',
+              borderBottom: '10px solid #90CAF9',
+              filter: 'drop-shadow(0 2px 4px rgba(144, 202, 249, 0.4)) drop-shadow(0 4px 8px rgba(144, 202, 249, 0.2))',
             }}
           />
           <div
             className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
-              borderLeft: '7px solid transparent',
-              borderRight: '7px solid transparent',
-              borderBottom: '7px solid #EAF4FF',
+              borderLeft: '8px solid transparent',
+              borderRight: '8px solid transparent',
+              borderBottom: '8px solid #EAF4FF',
+              filter: 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.8))',
+            }}
+          />
+          {/* 3D highlight on arrow */}
+          <div
+            className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
+            style={{
+              borderLeft: '6px solid transparent',
+              borderRight: '6px solid transparent',
+              borderBottom: '6px solid rgba(255, 255, 255, 0.6)',
             }}
           />
 
@@ -244,11 +257,18 @@ export default function RegisterTooltip({
             <div className={`flex items-center gap-1 ${isMobile ? 'flex-wrap' : 'flex-wrap'}`}>
               <span className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-[#333]`}>Mã giấy thiệu:</span>
               <code
-                className={`${isMobile ? 'text-xs font-bold' : 'text-sm font-bold'} font-mono whitespace-pre-wrap break-words px-2 py-1 rounded bg-[#1976D2] text-white shadow-sm`}
+                className={`${isMobile ? 'text-xs font-bold' : 'text-sm font-bold'} font-mono whitespace-pre-wrap break-words px-3 py-2 rounded-lg text-white shadow-lg transition-all duration-200 hover:scale-105`}
                 style={{
-                  backgroundColor: '#1976D2',
+                  background: 'linear-gradient(135deg, #1976D2 0%, #1565C0 100%)',
                   color: 'white',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                  textShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                  boxShadow: `
+                    0 2px 4px rgba(25, 118, 210, 0.3),
+                    0 4px 8px rgba(25, 118, 210, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                    inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                  `,
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
                 {referralCode}
@@ -256,8 +276,12 @@ export default function RegisterTooltip({
               <Button
                 size="sm"
                 variant="outline"
-                className={`${isMobile ? 'h-5 px-1 text-[10px]' : 'h-6 px-2 text-xs'} border-[#1976D2] text-[#1976D2] hover:bg-[#1976D2] hover:text-white transition-all duration-200 hover:scale-105`}
+                className={`${isMobile ? 'h-5 px-1 text-[10px]' : 'h-6 px-2 text-xs'} border-[#1976D2] text-[#1976D2] hover:bg-[#1976D2] hover:text-white transition-all duration-200 hover:scale-105 hover:shadow-lg`}
                 onClick={handleCopyCode}
+                style={{
+                  boxShadow: '0 1px 3px rgba(25, 118, 210, 0.2)',
+                  border: '1px solid #1976D2'
+                }}
               >
                 {copied ? (
                   <>
