@@ -180,8 +180,8 @@ export default function RegisterTooltip({
           ref={tooltipRef}
           className={`
             fixed z-[99999] rounded-xl
-            transition-all duration-300 ease-in-out transform
-            hover:scale-105 hover:shadow-2xl
+            transition-all duration-500 ease-out transform
+            hover:scale-102 hover:brightness-110
             ${isMobile
               ? 'p-2'
               : 'w-[320px] max-w-[80vw] p-4'
@@ -195,35 +195,37 @@ export default function RegisterTooltip({
             width: isMobile ? Math.min(280, window.innerWidth - 32) : 320,
             maxWidth: isMobile ? Math.min(280, window.innerWidth - 32) : '80vw',
             backgroundColor: '#EAF4FF',
-            border: '2px solid #90CAF9',
-            borderRadius: '12px',
+            border: '1px solid rgba(144, 202, 249, 0.6)',
+            borderRadius: '16px',
             boxShadow: `
-              0 8px 32px rgba(144, 202, 249, 0.25),
+              0 0 0 1px rgba(144, 202, 249, 0.3),
+              0 0 20px rgba(144, 202, 249, 0.2),
+              0 0 40px rgba(144, 202, 249, 0.1),
               0 4px 16px rgba(144, 202, 249, 0.15),
               0 2px 8px rgba(144, 202, 249, 0.1),
-              0 0 0 1px rgba(144, 202, 249, 0.05),
-              inset 0 1px 0 rgba(255, 255, 255, 0.8)
+              inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              inset 0 -1px 0 rgba(144, 202, 249, 0.1)
             `,
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
           }}
         >
           {/* Arrow pointing to button */}
           <div
             className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
-              borderLeft: '10px solid transparent',
-              borderRight: '10px solid transparent',
-              borderBottom: '10px solid #90CAF9',
-              filter: 'drop-shadow(0 2px 4px rgba(144, 202, 249, 0.3))',
+              borderLeft: '8px solid transparent',
+              borderRight: '8px solid transparent',
+              borderBottom: '8px solid rgba(144, 202, 249, 0.6)',
+              filter: 'drop-shadow(0 0 8px rgba(144, 202, 249, 0.3)) drop-shadow(0 0 16px rgba(144, 202, 249, 0.2))',
             }}
           />
           <div
             className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
-              borderLeft: '8px solid transparent',
-              borderRight: '8px solid transparent',
-              borderBottom: '8px solid #EAF4FF',
+              borderLeft: '7px solid transparent',
+              borderRight: '7px solid transparent',
+              borderBottom: '7px solid #EAF4FF',
             }}
           />
 
