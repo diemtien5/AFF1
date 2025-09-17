@@ -198,6 +198,24 @@ export default function RegisterTooltip({
             boxShadow: '0 4px 12px rgba(25, 118, 210, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)',
           }}
         >
+          {/* Arrow pointing to button */}
+          <div
+            className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0"
+            style={{
+              borderLeft: '8px solid transparent',
+              borderRight: '8px solid transparent',
+              borderBottom: '8px solid #90CAF9',
+            }}
+          />
+          <div
+            className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0"
+            style={{
+              borderLeft: '7px solid transparent',
+              borderRight: '7px solid transparent',
+              borderBottom: '7px solid #EAF4FF',
+            }}
+          />
+
           <div className={`${isMobile ? 'space-y-2' : 'space-y-3'}`}>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-[#1976D2] rounded-full animate-pulse"></div>
