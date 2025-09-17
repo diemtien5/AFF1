@@ -28,6 +28,8 @@ export default function RegisterTooltip({
   const containerRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 })
+  const [isMounted, setIsMounted] = useState(false)
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const updateTooltipPosition = () => {
     if (!containerRef.current) return
@@ -46,6 +48,11 @@ export default function RegisterTooltip({
 
     setTooltipPos({ top, left })
   }
+
+  useEffect(() => {
+    // Ensure portal only renders on client
+    setIsMounted(true)
+  }, [])
 
   const handleCopyCode = async () => {
     try {
@@ -68,6 +75,10 @@ export default function RegisterTooltip({
 
   const handleMouseEnter = () => {
     if (!isMobile && showTooltip) {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
+        hideTimeoutRef.current = null
+      }
       updateTooltipPosition()
       setIsVisible(true)
 
@@ -81,8 +92,10 @@ export default function RegisterTooltip({
 
   const handleMouseLeave = () => {
     if (!isMobile && showTooltip) {
-      setIsVisible(false)
-      // Clear timeout when mouse leaves
+      // Delay hide slightly to avoid flicker
+      hideTimeoutRef.current = setTimeout(() => {
+        setIsVisible(false)
+      }, 150)
       if (tapTimeout) {
         clearTimeout(tapTimeout)
         setTapTimeout(null)
@@ -122,11 +135,10 @@ export default function RegisterTooltip({
     }
   }
 
-  // Handle click outside to hide tooltip on mobile
+  // Handle click outside to hide tooltip on mobile/desktop and keep position updated
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        isMobile &&
         isVisible &&
         containerRef.current &&
         !containerRef.current.contains(event.target as Node) &&
@@ -147,11 +159,16 @@ export default function RegisterTooltip({
       document.addEventListener('mousedown', handleClickOutside)
       window.addEventListener('scroll', updateTooltipPosition, true)
       window.addEventListener('resize', updateTooltipPosition)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
     }
+
     return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
       window.removeEventListener('scroll', updateTooltipPosition, true)
       window.removeEventListener('resize', updateTooltipPosition)
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
+        hideTimeoutRef.current = null
+      }
     }
   }, [isMobile, isVisible, tapTimeout])
 
@@ -175,13 +192,12 @@ export default function RegisterTooltip({
         {children}
       </div>
 
-      {isVisible && showTooltip && createPortal(
+      {isMounted && isVisible && showTooltip && createPortal(
         <div
           ref={tooltipRef}
           className={`
             fixed z-[99999] rounded-xl
-            transition-all duration-500 ease-out transform
-            hover:scale-101 hover:brightness-105 hover:rotate-0.5
+            transition-all duration-300 ease-out transform
             ${isMobile
               ? 'p-2'
               : 'w-[320px] max-w-[80vw] p-4'
@@ -216,10 +232,11 @@ export default function RegisterTooltip({
             `,
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
+            pointerEvents: 'auto'
           }}
         >
           {/* Arrow pointing to button - Unified seamless design */}
-          <div 
+          <div
             className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
               borderLeft: '12px solid transparent',
@@ -228,7 +245,7 @@ export default function RegisterTooltip({
               filter: 'drop-shadow(0 2px 4px rgba(144, 202, 249, 0.2))',
             }}
           />
-          <div 
+          <div
             className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
               borderLeft: '10px solid transparent',
@@ -237,7 +254,7 @@ export default function RegisterTooltip({
               filter: 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.9))',
             }}
           />
-          <div 
+          <div
             className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
               borderLeft: '8px solid transparent',
@@ -247,7 +264,7 @@ export default function RegisterTooltip({
             }}
           />
           {/* Inner highlight */}
-          <div 
+          <div
             className="absolute -top-0.5 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
               borderLeft: '6px solid transparent',
