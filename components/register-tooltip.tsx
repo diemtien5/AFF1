@@ -181,7 +181,7 @@ export default function RegisterTooltip({
           className={`
             fixed z-[99999] rounded-xl
             transition-all duration-500 ease-out transform
-            hover:scale-102 hover:brightness-110 hover:rotate-1
+            hover:scale-101 hover:brightness-105 hover:rotate-0.5
             ${isMobile
               ? 'p-2'
               : 'w-[320px] max-w-[80vw] p-4'
@@ -195,46 +195,60 @@ export default function RegisterTooltip({
             width: 'fit-content',
             minWidth: isMobile ? Math.min(280, window.innerWidth - 32) : 320,
             maxWidth: isMobile ? Math.min(280, window.innerWidth - 32) : '80vw',
-            backgroundColor: '#EAF4FF',
-            border: '2px solid #90CAF9',
-            borderRadius: '12px',
-            boxShadow: `
-              0 0 0 1px rgba(255, 255, 255, 0.8),
-              0 2px 4px rgba(144, 202, 249, 0.3),
-              0 4px 8px rgba(144, 202, 249, 0.2),
-              0 8px 16px rgba(144, 202, 249, 0.15),
-              0 16px 32px rgba(144, 202, 249, 0.1),
-              inset 0 1px 0 rgba(255, 255, 255, 0.9),
-              inset 0 -1px 0 rgba(144, 202, 249, 0.2),
-              inset 1px 0 0 rgba(255, 255, 255, 0.5),
-              inset -1px 0 0 rgba(144, 202, 249, 0.1)
+            background: `
+              linear-gradient(135deg, #EAF4FF 0%, #F0F8FF 50%, #E6F3FF 100%),
+              linear-gradient(45deg, transparent 0%, rgba(144, 202, 249, 0.1) 50%, transparent 100%)
             `,
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
+            backgroundBlendMode: 'overlay',
+            border: 'none',
+            borderRadius: '16px',
+            position: 'relative',
+            boxShadow: `
+              0 0 0 1px rgba(144, 202, 249, 0.4),
+              0 0 0 2px rgba(255, 255, 255, 0.8),
+              0 4px 12px rgba(144, 202, 249, 0.15),
+              0 8px 24px rgba(144, 202, 249, 0.1),
+              0 16px 48px rgba(144, 202, 249, 0.05),
+              inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              inset 0 -1px 0 rgba(144, 202, 249, 0.1),
+              inset 1px 0 0 rgba(255, 255, 255, 0.6),
+              inset -1px 0 0 rgba(144, 202, 249, 0.05)
+            `,
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
           }}
         >
-          {/* Arrow pointing to button - 3D seamless design */}
-          <div
+          {/* Arrow pointing to button - Unified seamless design */}
+          <div 
             className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
+            style={{
+              borderLeft: '12px solid transparent',
+              borderRight: '12px solid transparent',
+              borderBottom: '12px solid rgba(144, 202, 249, 0.4)',
+              filter: 'drop-shadow(0 2px 4px rgba(144, 202, 249, 0.2))',
+            }}
+          />
+          <div 
+            className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
               borderLeft: '10px solid transparent',
               borderRight: '10px solid transparent',
-              borderBottom: '10px solid #90CAF9',
-              filter: 'drop-shadow(0 2px 4px rgba(144, 202, 249, 0.4)) drop-shadow(0 4px 8px rgba(144, 202, 249, 0.2))',
+              borderBottom: '10px solid rgba(255, 255, 255, 0.8)',
+              filter: 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.9))',
             }}
           />
-          <div
-            className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
+          <div 
+            className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
               borderLeft: '8px solid transparent',
               borderRight: '8px solid transparent',
               borderBottom: '8px solid #EAF4FF',
-              filter: 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.8))',
+              background: 'linear-gradient(135deg, #EAF4FF 0%, #F0F8FF 50%, #E6F3FF 100%)',
             }}
           />
-          {/* 3D highlight on arrow */}
-          <div
-            className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
+          {/* Inner highlight */}
+          <div 
+            className="absolute -top-0.5 left-1/2 transform -translate-x-1/2 w-0 h-0 transition-all duration-300 ease-in-out"
             style={{
               borderLeft: '6px solid transparent',
               borderRight: '6px solid transparent',
