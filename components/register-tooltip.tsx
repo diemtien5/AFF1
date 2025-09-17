@@ -159,6 +159,20 @@ export default function RegisterTooltip({
       document.addEventListener('mousedown', handleClickOutside)
       window.addEventListener('scroll', updateTooltipPosition, true)
       window.addEventListener('resize', updateTooltipPosition)
+      // After render, re-measure actual tooltip width and clamp again
+      requestAnimationFrame(() => {
+        if (tooltipRef.current) {
+          const actualWidth = tooltipRef.current.offsetWidth || (isMobile ? Math.min(280, window.innerWidth - 32) : 320)
+          const rect = containerRef.current?.getBoundingClientRect()
+          if (rect) {
+            const left = Math.max(
+              actualWidth / 2,
+              Math.min(rect.left + rect.width / 2, window.innerWidth - actualWidth / 2)
+            )
+            setTooltipPos((p) => ({ ...p, left }))
+          }
+        }
+      })
     }
 
     return () => {
