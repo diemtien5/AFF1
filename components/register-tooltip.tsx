@@ -70,12 +70,23 @@ export default function RegisterTooltip({
     if (!isMobile && showTooltip) {
       updateTooltipPosition()
       setIsVisible(true)
+
+      // Auto hide after 6 seconds on desktop too
+      const timeout = setTimeout(() => {
+        setIsVisible(false)
+      }, 6000)
+      setTapTimeout(timeout)
     }
   }
 
   const handleMouseLeave = () => {
     if (!isMobile && showTooltip) {
       setIsVisible(false)
+      // Clear timeout when mouse leaves
+      if (tapTimeout) {
+        clearTimeout(tapTimeout)
+        setTapTimeout(null)
+      }
     }
   }
 
@@ -88,11 +99,11 @@ export default function RegisterTooltip({
         setIsVisible(true)
         setTapCount(1)
 
-        // Reset tap count after 8 seconds (increased for better UX)
+        // Reset tap count after 6 seconds
         const timeout = setTimeout(() => {
           setTapCount(0)
           setIsVisible(false)
-        }, 8000)
+        }, 6000)
         setTapTimeout(timeout)
       } else if (tapCount === 1) {
         // Second tap: redirect
@@ -168,13 +179,13 @@ export default function RegisterTooltip({
         <div
           ref={tooltipRef}
           className={`
-            fixed z-[99999] bg-white border border-gray-200 rounded-xl shadow-lg
-            transition-all duration-200 ease-in-out
+            fixed z-[99999] rounded-xl shadow-lg
+            transition-all duration-300 ease-in-out transform
             ${isMobile
               ? 'p-2'
               : 'w-[320px] max-w-[80vw] p-4'
             }
-            ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
+            ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'}
           `}
           style={{
             top: tooltipPos.top,
@@ -182,29 +193,39 @@ export default function RegisterTooltip({
             transform: 'translateX(-50%)',
             width: isMobile ? Math.min(280, window.innerWidth - 32) : 320,
             maxWidth: isMobile ? Math.min(280, window.innerWidth - 32) : '80vw',
+            backgroundColor: '#EAF4FF',
+            border: '1px solid #90CAF9',
+            boxShadow: '0 4px 12px rgba(25, 118, 210, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)',
           }}
         >
           <div className={`${isMobile ? 'space-y-2' : 'space-y-3'}`}>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <h3 className={`${isMobile ? 'text-xs font-semibold' : 'text-sm font-semibold'} text-gray-800`}>
+              <div className="w-2 h-2 bg-[#1976D2] rounded-full animate-pulse"></div>
+              <h3 className={`${isMobile ? 'text-xs font-semibold' : 'text-sm font-semibold'} text-[#333]`}>
                 Lưu ý trong quá trình đăng ký
               </h3>
             </div>
 
-            <p className={`${isMobile ? 'text-[10px] leading-tight' : 'text-xs leading-relaxed'} text-gray-600 whitespace-normal break-words`}>
-              Quý khách vui lòng nhập đúng mã nhân viên vào mục "Mã giấy thiệu" , để được hỗ trợ tốt về thẩm định và tăng phê duyệt.
+            <p className={`${isMobile ? 'text-[10px] leading-tight' : 'text-xs leading-relaxed'} text-[#333] whitespace-normal break-words`}>
+              Vui lòng nhập đúng "Mã giấy thiệu", để được hỗ trợ phê duyệt nhanh và nhận ưu đãi
             </p>
 
             <div className={`flex items-center gap-1 ${isMobile ? 'flex-wrap' : 'flex-wrap'}`}>
-              <span className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-blue-700`}>Mã giấy thiệu:</span>
-              <code className={`${isMobile ? 'text-xs font-bold' : 'text-sm font-bold'} text-blue-800 font-mono whitespace-pre-wrap break-words`}>
+              <span className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-[#333]`}>Mã giấy thiệu:</span>
+              <code
+                className={`${isMobile ? 'text-xs font-bold' : 'text-sm font-bold'} font-mono whitespace-pre-wrap break-words px-2 py-1 rounded bg-[#1976D2] text-white shadow-sm`}
+                style={{
+                  backgroundColor: '#1976D2',
+                  color: 'white',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                }}
+              >
                 {referralCode}
               </code>
               <Button
                 size="sm"
                 variant="outline"
-                className={`${isMobile ? 'h-5 px-1 text-[10px]' : 'h-6 px-2 text-xs'} border-blue-300 text-blue-700 hover:bg-blue-100`}
+                className={`${isMobile ? 'h-5 px-1 text-[10px]' : 'h-6 px-2 text-xs'} border-[#1976D2] text-[#1976D2] hover:bg-[#1976D2] hover:text-white transition-all duration-200 hover:scale-105`}
                 onClick={handleCopyCode}
               >
                 {copied ? (
@@ -221,17 +242,9 @@ export default function RegisterTooltip({
               </Button>
             </div>
 
-            <p className={`${isMobile ? 'text-[9px]' : 'text-[11px]'} text-blue-600 whitespace-normal break-words`}>
+            <p className={`${isMobile ? 'text-[9px]' : 'text-[11px]'} text-[#1976D2] whitespace-normal break-words`}>
               Vui lòng sao chép mã giới thiệu và dán vào ô 'Mã giới thiệu' khi đăng ký.
             </p>
-
-            {isMobile && tapCount === 1 && (
-              <div className="text-center">
-                <p className="text-[10px] text-orange-600 font-medium">
-                  Chạm lần nữa để đăng ký
-                </p>
-              </div>
-            )}
           </div>
         </div>,
         document.body
