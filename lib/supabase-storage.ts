@@ -37,11 +37,17 @@ export const uploadImage = async (file: File, bucket = "card-images", folder = "
 
 export const deleteImage = async (url: string, bucket = "card-images") => {
   try {
-    // Extract filename from URL
-    const urlParts = url.split("/")
-    const fileName = urlParts[urlParts.length - 1]
+    // Extract the full file path (including nested folders) after the bucket name.
+    // Supabase public URLs typically look like:
+    // https://<project>.supabase.co/storage/v1/object/public/<bucket>/<folder>/file.png
+    const prefix = `/storage/v1/object/public/${bucket}/`
+    const pathStart = url.indexOf(prefix)
+    if (pathStart === -1) {
+      throw new Error("Invalid Supabase storage URL")
+    }
+    const filePath = url.slice(pathStart + prefix.length)
 
-    const { error } = await supabase.storage.from(bucket).remove([fileName])
+    const { error } = await supabase.storage.from(bucket).remove([filePath])
 
     if (error) throw error
   } catch (error) {
